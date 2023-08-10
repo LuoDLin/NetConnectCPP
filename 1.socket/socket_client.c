@@ -24,6 +24,7 @@ int main(){
     char buf[1024];
     while(1){
         // 读取用户输入
+        printf("input: ");
         scanf("%s", buf);
 
         if( !strcmp(buf, "exit") ){
