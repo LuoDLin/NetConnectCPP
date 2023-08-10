@@ -43,6 +43,7 @@ int main(){
         // 读取客户端发送的数据 read/recv
         // recv(client_fd, buf, sizeof(buf), 0);
         int len = read(client_fd, buf, sizeof(buf));
+        buf[len] = '\0';
 
         if(len <= 0 ){  // 读取出错
             printf("read error!\n");
