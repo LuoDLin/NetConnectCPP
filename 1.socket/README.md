@@ -10,11 +10,11 @@ int socket(int domain, int type, int protocol);
 
 ##### 参数
 
-`domain`: 地址族, `AF_INET` 表示IPv4地址族，`AF_INET6` 表示IPv6地址族
+- `domain`: 地址族, `AF_INET` 表示IPv4地址族，`AF_INET6` 表示IPv6地址族
 
-`type`: 套接字类型, `SOCK_STREAM`面向连接的流套接字(TCP), `SOCK_DGRAM`无连接的数据报套接字(UDP)
+- `type`:          套接字类型, `SOCK_STREAM`面向连接的流套接字(TCP), `SOCK_DGRAM`无连接的数据报套接字(UDP)
 
-`protocol`: 协议，通常为0，表示系统会根据 `domain` 和 `type` 自动选择合适的协议，如TCP或UDP
+- `protocol`: 协议，通常为0，表示系统会根据 `domain` 和 `type` 自动选择合适的协议，如TCP或UDP
 
 ##### 返回值
 
