@@ -1,6 +1,6 @@
 ## 代码流程图
 
-![image](流程图.png)
+![image](https://github.com/LuoDLin/NetConnectCPP/tree/main/docs/image/流程图.png)
 
 - 服务器
 
