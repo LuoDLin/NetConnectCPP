@@ -2,6 +2,14 @@
 
 ![image](流程图.png)
 
+- 服务器
+
+    创建套接字=>设置端口复用(可选)=>绑定地址结构=>设置监听上限=>等待客户端连接=>等待客户端消息=>回传客户端消息
+
+- 客户端
+
+    创建套接字=>连接服务器=>等待用户数据数据=>发送数据=>等待服务器数据
+
 ## 函数API
 
 ### socket
@@ -12,7 +20,7 @@ int socket(int domain，int type，int protocol);
 
 #### 描述
 
-`socket` 函数用于创建一个套接字（socket），它是网络通信中的基本构建块，允许不同计算机之间进行数据传输
+- `socket` 函数用于创建一个套接字（socket），它是网络通信中的基本构建块，允许不同计算机之间进行数据传输
 
 #### 参数
 
@@ -37,7 +45,7 @@ int setsockopt(int sockfd，int level，int optname，const void *optval，sockl
 
 #### 描述
 
-`setsockopt` 函数用于设置套接字选项，允许你配置套接字的行为和属性
+- `setsockopt` 函数用于设置套接字选项，允许你配置套接字的行为和属性
 
 #### 参数
 
@@ -62,7 +70,7 @@ int bind(int sockfd，const struct sockaddr *addr，socklen_t addrlen);
 
 #### 描述
 
-`bind` 函数用于将套接字与特定的本地地址绑定，使得其他计算机可以通过该地址与套接字进行通信
+- `bind` 函数用于将套接字与特定的本地地址绑定，使得其他计算机可以通过该地址与套接字进行通信
 
 #### 参数
 
@@ -85,7 +93,7 @@ int listen(int sockfd，int backlog);
 
 #### 描述
 
-`listen` 函数将套接字置于监听状态，等待其他计算机的连接请求对于流套接字（如TCP套接字），`listen` 函数将创建一个等待连接的队列，可以排队等待处理的连接请求的数量由 `backlog` 参数指定
+- `listen` 函数将套接字置于监听状态，等待其他计算机的连接请求对于流套接字（如TCP套接字），`listen` 函数将创建一个等待连接的队列，可以排队等待处理的连接请求的数量由 `backlog` 参数指定
 
 #### 参数
 
@@ -107,7 +115,7 @@ int accept(int sockfd，struct sockaddr *addr，socklen_t *addrlen);
 
 #### 描述
 
-`accept` 函数用于接受连接请求，创建一个新的套接字来与客户端进行通信它在服务端程序中使用，用于接受流套接字（如TCP套接字）的连接
+- `accept` 函数用于接受连接请求，创建一个新的套接字来与客户端进行通信它在服务端程序中使用，用于接受流套接字（如TCP套接字）的连接
 
 #### 参数
 
