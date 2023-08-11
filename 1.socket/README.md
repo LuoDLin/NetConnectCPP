@@ -1,3 +1,9 @@
+## 代码流程图
+
+![image](流程图.png)
+
+## 函数API
+
 ### socket
 
 ~~~c
@@ -115,10 +121,3 @@ int accept(int sockfd，struct sockaddr *addr，socklen_t *addrlen);
 - 失败时，返回 -1，并设置 `errno` 来指示错误类型
 
 ---
-
-
-
-
-
-
-
