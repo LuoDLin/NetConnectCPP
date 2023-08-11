@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #include <sys/select.h>
 
-#define SOCK_PORT 8080
+#define SERVER_PORT 8080
 #define CLIENT_MAX 1024
 
 void sys_err(const char *str){
@@ -30,7 +30,7 @@ int main(){
     // 绑定地址结构
     struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(SOCK_PORT);
+    server_addr.sin_port = htons(SERVER_PORT);
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     if(bind(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1){
         sys_err("bind failed");
