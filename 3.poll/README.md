@@ -1,3 +1,36 @@
+## 代码流程图
+
+``` mermaid
+graph LR
+    socket[创建套接字&#40socket&#41]
+    setsockopt[设置端口复用&#40setsockopt&#41]
+    bind[绑定地址结构&#40bind&#41]
+    listen[设置监听上限&#40listen&#41]
+    accept[接受连接请求&#40accept&#41]
+    read[读取数据&#40read&#41]
+    write[发送数据&#40write&#41]
+    close[关闭套接字&#40close&#41]
+    poll[等待事件&#40poll&#41]
+    initset[初始化pollfd数组]
+    finsh[所有事件处理完成]
+    addset[添加客户端描述符到pollfd数组]
+    socket --> setsockopt --> bind --> listen --> initset --> poll
+    poll --> |server fd可读| accept --> addset --> finsh
+    poll --> |client fd可读| read
+    read -->|返回值等于0| close --> finsh
+    read -->|返回值大于0| write --> finsh
+    finsh --> poll    
+```
+
+创建套接字=>设置端口复用(可选)=>绑定地址结构=>设置监听上限=>初始化文件描述符数组=>等待事件
+
+
+- 若有新的连接请求=>接受连接请求=>将新的连接套接字添加到文件描述符数组
+- 若有新的数据请求=>接收数据=>处理数据=>发送数据
+
+`select` 和 `poll` 都是用来同时监视多个文件描述符的工具，但`select` 使用文件描述符集合，而 `poll` 使用结构体数组，这样就导致了`select` 的文件描述符数量有限，而 `poll` 没有这个限制，能够处理更多的文件描述符，同时在文件描述符较多时，`poll` 通常更高效，因为它避免了 `select` 使用的一些效率问题
+
+
 ## 函数API
 
 ### poll

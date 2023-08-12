@@ -98,6 +98,7 @@ int main(){
     // 监听
     Listen(server_fd, 128);
 
+    // 初始化文件描述符集合
     struct pollfd client_fds[CLIENT_MAX+1]={0};
     client_fds[0].fd = server_fd;
     client_fds[0].events = POLLIN;
@@ -135,7 +136,6 @@ int main(){
                 printf("fd:%d recv buf: %s\n",client_fds[i].fd, buf); 
                 write(client_fds[i].fd, buf, read_len);
             }
-            
         }
     }
     // 关闭套接字

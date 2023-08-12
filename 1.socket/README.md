@@ -7,7 +7,7 @@ graph LR
     socket[创建套接字&#40socket&#41]
     setsockopt[设置端口复用&#40setsockopt&#41]
     bind[绑定地址结构&#40bind&#41]
-    listen[设置监听上线&#40listen&#41]
+    listen[设置监听上限&#40listen&#41]
     accept[等待连接请求&#40accept&#41]
     read[读取数据&#40read&#41]
     write[发送数据&#40write&#41]

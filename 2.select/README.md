@@ -5,16 +5,16 @@ graph LR
     socket[创建套接字&#40socket&#41]
     setsockopt[设置端口复用&#40setsockopt&#41]
     bind[绑定地址结构&#40bind&#41]
-    listen[设置监听上线&#40listen&#41]
-    accept[等待连接请求&#40accept&#41]
+    listen[设置监听上限&#40listen&#41]
+    accept[接受连接请求&#40accept&#41]
     read[读取数据&#40read&#41]
     write[发送数据&#40write&#41]
     close[关闭套接字&#40close&#41]
-    select[监听fd_set&#40select&#41]
+    select[等待事件&#40select&#41]
     setfd[设置fd_set&#40FD_SET&#41]
     finsh[所有事件处理完成]
     addset[添加客户端描述符到fd_set]
-    socket --> setsockopt --> bind --> listen --> setfd -->|等待事件| select
+    socket --> setsockopt --> bind --> listen --> setfd --> select
     select --> |server fd可读| accept --> addset --> finsh
     select --> |client fd可读| read
     read -->|返回值等于0| close --> finsh
