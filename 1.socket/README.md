@@ -1,14 +1,39 @@
 ## 代码流程图
 
-![image](https://github.com/LuoDLin/NetConnectCPP/blob/main/docs/image/socket.png)
-
 - 服务器
 
-    创建套接字=>设置端口复用(可选)=>绑定地址结构=>设置监听上限=>等待客户端连接=>等待客户端消息=>回传客户端消息
+```mermaid
+graph LR
+    socket[创建套接字&#40socket&#41]
+    setsockopt[设置端口复用&#40setsockopt&#41]
+    bind[绑定地址结构&#40bind&#41]
+    listen[设置监听上线&#40listen&#41]
+    accept[等待连接请求&#40accept&#41]
+    read[读取数据&#40read&#41]
+    write[发送数据&#40write&#41]
+    close[关闭套接字&#40close&#41]
+    socket --> setsockopt --> bind --> listen --> accept --> read 
+    read -->|返回值大于0|write --> read
+    read -->|返回值等于0|close --> accept
+```
+
+创建套接字=>设置端口复用(可选)=>绑定地址结构=>设置监听上限=>等待客户端连接=>等待客户端消息=>回传客户端消息
 
 - 客户端
 
-    创建套接字=>连接服务器=>等待用户输入数据=>发送用户输入数据=>等待服务器数据
+  ```mermaid
+  graph LR
+      socket[创建套接字&#40socket&#41]
+      connect[连接服务器&#40connect&#41]
+      read[读取数据&#40read&#41]
+      write[发送数据&#40write&#41]
+      scanf[输入数据&#40scanf&#41]
+      socket --> connect --> scanf -->write --> read --> scanf
+  
+         
+  ```
+
+  创建套接字=>连接服务器=>等待用户输入数据=>发送用户输入数据=>读取服务器数据
 
 ## 函数API
 
