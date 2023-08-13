@@ -4,9 +4,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
-#include <sys/epoll.h>
 #include <string.h>
 #include <event2/event.h>
+#include <event2/listener.h>
 
 
 #define SERVER_PORT 8080
@@ -92,13 +92,23 @@ int Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
     return n;
 }
 
+struct event_base *Event_base_new(void){
+    struct event_base *base = event_base_new();
+    if(base == NULL){
+        sys_err("event_base_new failed");
+        return NULL;
+    }
+    return base;
+}
+
 void client_read_cb(int fd, short event, void *arg){
     char buf[BUFSIZ];
     int len = Read(fd, buf, sizeof(buf));
-    
     if( len == 0){
+        struct event *ev = (struct event*)arg;
         printf("client closed\n");
-        close(fd);
+        event_free(ev); // 释放资源
+        close(fd);      // 关闭文件描述符
         return;
     }
     printf("client read: %s\n", buf);
@@ -109,39 +119,32 @@ void accept_cb(evutil_socket_t fd, short event, void * arg){
     struct event_base *base = (struct event_base*)arg;
     int client_fd = Accept(fd, NULL, NULL);
     printf("client connected\n");
-    struct event *client_event = event_new(base, client_fd, EV_READ | EV_PERSIST, client_read_cb, base);
+    struct event *client_event = event_new(NULL, -1, 0, NULL, NULL);
+    event_assign(client_event, base, client_fd, EV_READ | EV_PERSIST, client_read_cb, client_event);
     event_add(client_event, NULL);
 }
 
-
 int main(){
-    // 创建套接字
-    int server_fd = Socket(AF_INET, SOCK_STREAM, 0);
-
-    // 设置地址重用
-    int optval = 1;
-    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int));
-
-    // 绑定地址结构
+    int optval = 1,server_fd,client_fd;
     struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(SERVER_PORT);
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    Bind(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr));
 
-    // 监听
-    Listen(server_fd, 128);
+    server_fd = Socket(AF_INET, SOCK_STREAM, 0);// 创建套接字
+    Setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int));// 设置地址重用
+    Bind(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr));// 绑定地址结构
+    Listen(server_fd, 128);// 监听
 
-    struct event_base *base = event_base_new();
-    if(base == NULL){
-        printf("event_base_new failed\n");
-        return -1;
-    }
+    struct event_base *base = Event_base_new(); // 创建事件处理框架
+
     struct event *listen_event = event_new(base, server_fd, EV_READ | EV_PERSIST, accept_cb, base);
-    event_add(listen_event, NULL);
+    event_add(listen_event, NULL);  //添加事件
 
     printf("server start\n");
     event_base_dispatch(base);
+
+    event_free(listen_event);
     event_base_free(base);
     return 0;
 }

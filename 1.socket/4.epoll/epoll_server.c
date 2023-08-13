@@ -93,22 +93,17 @@ int Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
 
 
 int main(){
-    // 创建套接字
-    int server_fd = Socket(AF_INET, SOCK_STREAM, 0);
-
-    // 设置地址重用
-    int optval = 1;
-    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int));
-
-    // 绑定地址结构
+    char buf[1024];
+    int optval = 1,server_fd,client_fd;
     struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(SERVER_PORT);
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    Bind(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr));
 
-    // 监听
-    Listen(server_fd, 128);
+    server_fd = Socket(AF_INET, SOCK_STREAM, 0);// 创建套接字
+    Setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int));// 设置地址重用
+    Bind(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr));// 绑定地址结构
+    Listen(server_fd, 128);// 监听
 
     int epfd = Epoll_create(CLIENT_MAX);
     struct epoll_event event;
@@ -116,10 +111,11 @@ int main(){
     event.data.fd = server_fd;
     Epoll_ctl(epfd, EPOLL_CTL_ADD, server_fd, &event);
 
-    struct epoll_event events[CLIENT_MAX + 1];
+    struct epoll_event events[CLIENT_MAX + 1];  // 用于接收epoll_wait返回的事件
     printf("server is running...\n");
     while(1){
         int n = Epoll_wait(epfd, events, CLIENT_MAX + 1, -1);
+        
         for( int i = 0 ; i < n ; i ++ ){
             if( events[i].data.fd == server_fd ){ // 有新的客户端连接
                 printf("new client connect...\n");
@@ -128,17 +124,14 @@ int main(){
                 event.data.fd = client_fd;
                 Epoll_ctl(epfd, EPOLL_CTL_ADD, client_fd, &event);
             }else{
-                char buf[1024];
-                int read_len = Read(events[i].data.fd, buf, sizeof(buf));
-                if(read_len == 0 ){
-                    // close 之后 epoll 会自动删除
-                    close(events[i].data.fd);
+                int len = Read(events[i].data.fd, buf, sizeof(buf));
+                if(len == 0 ){
                     // Epoll_ctl(epfd, EPOLL_CTL_DEL, events[i].data.fd, NULL);
-                    // close(events[i].data.fd);
+                    close(events[i].data.fd); // close 之后 epoll 会自动删除
                     printf("client closed...\n");
                 }else{
-                    printf("fd:%d recv buf: %s\n",events[i].data.fd, buf); 
-                    write(events[i].data.fd, buf, read_len);
+                    printf("recv buf: %s\n", buf);  // 打印客户端发送的数据
+                    write(client_fd, buf, len);     // 将数据回写给客户端
                 }
             }
         }
