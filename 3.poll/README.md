@@ -36,6 +36,7 @@ graph LR
 ### poll
 
 ```c
+#include <sys/poll.h>
 int poll(struct pollfd *fds, nfds_t nfds, int timeout);
 ```
 
@@ -45,7 +46,7 @@ int poll(struct pollfd *fds, nfds_t nfds, int timeout);
 
 #### 参数
 
-- `fds`：一个指向 `struct pollfd` 数组的指针，每个结构体描述一个要监视的文件描述符及其关注的事件
+- `fds`：每个结构体描述一个要监视的文件描述符及其关注的事件
 - `nfds`：数组中元素的数量，即要监视的文件描述符的个数
 - `timeout`：超时时间，以毫秒为单位设置为负值表示无限等待，设置为 0 表示立即返回，设置为正值表示等待指定毫秒数后返回
 
@@ -64,7 +65,7 @@ int poll(struct pollfd *fds, nfds_t nfds, int timeout);
 #### 成员说明
 
 - `fd`：要监视的文件描述符，当 `poll` 函数调用时，会检查这个文件描述符是否就绪
-- `events`：表示关注的事件，是一个位掩码，可以使用以下常量进行设置：
+- `events`：表示关注的事件，可以使用以下常量进行设置：
   - `POLLIN`：表示文件描述符可读，当有数据可以从文件描述符读取时，会设置该标志
   - `POLLOUT`：表示文件描述符可写，当可以向文件描述符写入数据时，会设置该标志
   - `POLLERR`：表示文件描述符发生错误，当文件描述符出现错误时，会设置该标志

@@ -34,7 +34,7 @@ graph LR
 
 - 说明
 
-     - 使用 `select` 函数实现的服务器，可以同时处理多个客户端的连接请求，并且可以接收多个客户端的数据请求。又因为 `select` 函数是阻塞的，每次只有当有事件发生时才会返回，并且不知道是哪些客户端的数据，所以在处理数据请求时需要逐个检查每个客户端是否有数据。
+  - 使用 `select` 函数实现的服务器，可以同时处理多个客户端的连接请求，并且可以接收多个客户端的数据请求。又因为 `select` 函数是阻塞的，每次只有当有事件发生时才会返回，并且不知道是哪些客户端的数据，所以在处理数据请求时需要逐个检查每个客户端是否有数据。
 
 
 ## 函数API
@@ -42,6 +42,7 @@ graph LR
 ### select
 
 ```c
+#include <sys/select.h>
 int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
 ```
 
@@ -68,6 +69,7 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
 ### FD_ZERO
 
 ```c
+#include <sys/select.h>
 void FD_ZERO(fd_set *set);
 ```
 
@@ -77,7 +79,7 @@ void FD_ZERO(fd_set *set);
 
 #### 参数
 
-- `set`：文件描述符集合的指针，指向要清空的集合
+- `set`：要清空的集合
 
 #### 返回值
 
@@ -88,6 +90,7 @@ void FD_ZERO(fd_set *set);
 ### FD_ISSET
 
 ```c
+#include <sys/select.h>
 int FD_ISSET(int fd, fd_set *set);
 ```
 
@@ -98,7 +101,7 @@ int FD_ISSET(int fd, fd_set *set);
 #### 参数
 
 - `fd`：要检查的文件描述符
-- `set`：文件描述符集合的指针，指向要检查的集合
+- `set`：要检查的集合
 
 #### 返回值
 
@@ -109,6 +112,7 @@ int FD_ISSET(int fd, fd_set *set);
 ### FD_CLR
 
 ```c
+#include <sys/select.h>
 void FD_CLR(int fd, fd_set *set);
 ```
 
@@ -119,7 +123,7 @@ void FD_CLR(int fd, fd_set *set);
 #### 参数
 
 - `fd`：要从集合中移除的文件描述符
-- `set`：文件描述符集合的指针，指向要修改的集合
+- `set`：要修改的集合
 
 #### 返回值
 
@@ -130,6 +134,7 @@ void FD_CLR(int fd, fd_set *set);
 ### FD_SET
 
 ```c
+#include <sys/select.h>
 void FD_SET(int fd, fd_set *set);
 ```
 
@@ -140,11 +145,10 @@ void FD_SET(int fd, fd_set *set);
 #### 参数
 
 - `fd`：要添加到集合中的文件描述符
-- `set`：文件描述符集合的指针，指向要修改的集合
+- `set`：要修改的集合
 
 #### 返回值
 
 - 无返回值
 
 ---
-

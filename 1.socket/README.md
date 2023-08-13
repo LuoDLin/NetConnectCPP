@@ -40,6 +40,7 @@ graph LR
 ### socket
 
 ~~~c
+#include <sys/socket.h>
 int socket(int domain, int type, int protocol);
 ~~~
 
@@ -65,6 +66,7 @@ int socket(int domain, int type, int protocol);
 ### setsockopt
 
 ```c
+#include <sys/socket.h>
 int setsockopt(int sockfd,int level,int optname,const void *optval,socklen_t optlen);
 ```
 
@@ -90,6 +92,7 @@ int setsockopt(int sockfd,int level,int optname,const void *optval,socklen_t opt
 ### bind
 
 ```c
+#include <sys/socket.h>
 int bind(int sockfd,const struct sockaddr *addr,socklen_t addrlen);
 ```
 
@@ -113,6 +116,7 @@ int bind(int sockfd,const struct sockaddr *addr,socklen_t addrlen);
 ### listen
 
 ```c
+#include <sys/socket.h>
 int listen(int sockfd,int backlog);
 ```
 
@@ -135,6 +139,7 @@ int listen(int sockfd,int backlog);
 ### accept
 
 ~~~c
+#include <sys/socket.h>
 int accept(int sockfd,struct sockaddr *addr,socklen_t *addrlen);
 ~~~
 
