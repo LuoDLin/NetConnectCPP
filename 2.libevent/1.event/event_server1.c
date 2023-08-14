@@ -66,32 +66,6 @@ int Read(int fd, void *buf, size_t count){
     return ret;
 }
 
-int Epoll_create(int size) {
-    int fd = epoll_create(size);
-    if (fd == -1) {
-        perror("epoll_create");
-        exit(-1);
-    }
-    return fd;
-}
-
-void Epoll_ctl(int epfd, int op, int fd, struct epoll_event *event) {
-    int ret = epoll_ctl(epfd, op, fd, event);
-    if (ret == -1) {
-        perror("epoll_ctl");
-        exit(-1);
-    }
-}
-
-int Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout) {
-    int n = epoll_wait(epfd, events, maxevents, timeout);
-    if (n == -1) {
-        perror("epoll_wait");
-        exit(-1);
-    }
-    return n;
-}
-
 struct event_base *Event_base_new(void){
     struct event_base *base = event_base_new();
     if(base == NULL){
@@ -144,7 +118,6 @@ int main(){
     printf("server start\n");
 
     event_base_dispatch(base);  // 代替while(1)循环
-
     event_free(listen_event);
     event_base_free(base);
     return 0;

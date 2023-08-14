@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <string.h>
-#include <event2/event.h>
+#include <event2/bufferevent.h>
 #include <event2/listener.h>
 
 
@@ -17,14 +17,6 @@ void sys_err(const char *str){
     exit(1);
 }
 
-int Read(int fd, void *buf, size_t count){
-    int ret = read(fd, buf, count);
-    if(ret == -1){
-        sys_err("read failed");
-    }
-    ((char*)buf)[ret] = '\0';
-    return ret;
-}
 
 struct event_base *Event_base_new(void){
     struct event_base *base = event_base_new();
@@ -35,27 +27,34 @@ struct event_base *Event_base_new(void){
     return base;
 }
 
-void client_read_cb(int fd, short event, void *arg){
+void client_read_cb(struct bufferevent *bev, void *ctx){
     char buf[BUFSIZ];
-    int len = Read(fd, buf, sizeof(buf));
-    if( len == 0){
-        struct event *ev = (struct event*)arg;
-        printf("client closed\n");
-        event_free(ev);
-        close(fd);
-        return;
-    }
+    size_t len = bufferevent_read(bev, buf, sizeof(buf));
+    buf[len] = '\0';
     printf("client read: %s\n", buf);
-    write(fd, buf, len);
+    bufferevent_write(bev, buf, len);
+}
+
+void event_cb(struct bufferevent *bev, short what, void *ctx){
+    if(what & BEV_EVENT_EOF){
+        printf("connection closed...\n");
+        bufferevent_free(bev);
+    }else if(what & BEV_EVENT_ERROR){
+        perror("bufferevent_read");
+    }
 }
 
 void accept_cb(struct evconnlistener *listen, evutil_socket_t fd, struct sockaddr * addr, int socklen, void *arg){
     printf("client connected\n");
-    struct event_base *base = (struct event_base*)arg;
+    struct event_base *base = evconnlistener_get_base(listen);
 
-    struct event *client_event = event_new(NULL, -1, 0, NULL, NULL);
-    event_assign(client_event, base, fd, EV_READ | EV_PERSIST, client_read_cb, client_event);
-    event_add(client_event, NULL);
+    struct bufferevent *bev = bufferevent_socket_new(base, fd, BEV_OPT_CLOSE_ON_FREE);
+    if(bev == NULL){
+        perror("bufferevent_socket_new");
+        exit(1);
+    }
+    bufferevent_setcb(bev, client_read_cb, NULL, event_cb, NULL);
+    bufferevent_enable(bev, EV_READ | EV_WRITE);
 }
 
 int main(){
@@ -69,6 +68,10 @@ int main(){
     struct evconnlistener * listener = evconnlistener_new_bind(base, accept_cb, base, 
         LEV_OPT_CLOSE_ON_FREE | LEV_OPT_REUSEABLE, 128, 
         (struct sockaddr*)&server_addr, sizeof(server_addr));
+    if(listener == NULL){
+        perror("evconnlistener_new_bind");
+        exit(1);
+    }
 
     printf("server start\n");
     event_base_dispatch(base);  // 代替while(1)循环
