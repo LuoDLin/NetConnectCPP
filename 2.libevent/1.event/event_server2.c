@@ -72,7 +72,7 @@ int main(){
         (struct sockaddr*)&server_addr, sizeof(server_addr));
 
     printf("server start\n");
-    event_base_dispatch(base);  // 事件循环
+    event_base_dispatch(base);  // 代替while(1)循环
     event_base_free(base);
     return 0;
 }

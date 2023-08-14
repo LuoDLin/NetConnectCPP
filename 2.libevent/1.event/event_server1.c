@@ -142,7 +142,8 @@ int main(){
     event_add(listen_event, NULL);  //添加事件
 
     printf("server start\n");
-    event_base_dispatch(base);
+
+    event_base_dispatch(base);  // 代替while(1)循环
 
     event_free(listen_event);
     event_base_free(base);
